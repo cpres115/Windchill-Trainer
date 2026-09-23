@@ -1,9 +1,13 @@
-# Windchill Trainer
+# FCUS Windchill Training
 
 A searchable, login-protected set of how-to guides for **PTC Windchill**, such as
 *How to create a promotion request*, *How to create a WTPart* and *How to change attributes*.
+It uses Fischer Connectors branding (red, navy and gray, with the company logo) and has a light/dark switch on every page.
 
-- **Home page lists every guide**, grouped by category, with an instant filter and a *Not read* toggle.
+- **Five main topics are linked at the top of the home page:** Product Lifecycle Management, Navigating and working with Windchill,
+  Document Objects, CAD Objects, and WT Parts (Articles). Each topic has its own page listing its guides.
+- **Home page lists every guide**, grouped by topic, with an instant filter and a *Not read* toggle.
+- **Light/dark switch** in the top bar and on the sign-in page. Each browser remembers its own choice; the first visit follows the computer's setting.
 - **Keyword search** with typo tolerance, prefix matching ("promo" finds "promotion") and live suggestions as you type. Titles and tags rank above body text.
 - **Read tracking.** Each user sees which guides are **New**, **✓ Read**, or **Updated** since they last opened them. Admins get a report of who has read what, and can download it as CSV.
 - **Username and password sign-in** with three roles:
@@ -53,11 +57,12 @@ Passwords are hashed with bcrypt and stored in `data/users.json`. Sign-in is rat
 ### In the browser (editors and admins)
 
 - Click **+ New page**, or **Edit** on any page.
-- Fill in the **Title**, **Category**, **Summary** (shown in search results) and **Keywords / tags**.
+- Fill in the **Title**, **Topic**, **Summary** (shown in search results) and **Keywords / tags**.
   Add synonyms people might search for, e.g. `WTPart, WT Part, part, new part`.
 - Write the body in Markdown. The toolbar inserts headings, numbered steps, tips, tables and links.
 - To add a screenshot, **paste it** (Ctrl+V), **drag it** into the editor, or use **Image**.
 - If a search finds nothing, editors see a button that creates a page with that title.
+- Each topic page has an **+ Add a guide here** button that creates a page already assigned to that topic.
 
 ### As files (developers)
 
@@ -68,7 +73,7 @@ Each guide is one Markdown file in `content/pages/`. The filename is the URL:
 ---
 title: How to create a WTPart
 summary: Create a new part in a product or library and check it in.
-category: Parts & BOMs
+category: WT Parts (Articles)
 tags:
   - WTPart
   - new part
@@ -87,11 +92,24 @@ Link to another guide: [change attributes](/pages/change-attributes)
 To scaffold a new page from a template:
 
 ```bash
-npm run new-page -- "How to revise a part" --category "Parts & BOMs"
+npm run new-page -- "How to revise a part" --category wt-parts
 ```
 
+`--category` takes a topic slug or name from `content/sections.json`.
+
 The running server watches `content/pages/`, so edits, new files and `git pull`s appear
-immediately without a restart. Images live in `content/images/` and are served at `/images/…`,
+immediately without a restart.
+
+### Topics
+
+The five topics are defined in `content/sections.json`. Each has a URL slug, a name, a description and an icon
+(`lifecycle`, `compass`, `document`, `cube` or `part`). Edit that file to rename, reorder or add topics;
+changes show up on the next page load. A page belongs to a topic when its `category` matches the topic's name or slug.
+Pages that match no topic appear under **Other**.
+
+### Images
+
+Images live in `content/images/` and are served at `/images/…`,
 and only to signed-in users.
 
 Keep `content/` in git to get history, review and rollback for every guide.
@@ -113,7 +131,7 @@ Set these environment variables as needed:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `3000` | HTTP port |
-| `SITE_NAME` | `Windchill Trainer` | Name shown in the header and page titles |
+| `SITE_NAME` | `FCUS Windchill Training` | Name shown in the header and page titles |
 | `SESSION_SECRET` | auto-generated in `data/session-secret` | Secret that signs session cookies |
 | `SESSION_MAX_AGE_HOURS` | `8` | Signs users out after this long idle |
 | `SECURE_COOKIES` | `false` | Set to `true` when served over HTTPS |
@@ -140,13 +158,15 @@ npm test       # end-to-end tests: auth, roles, search, editing, read tracking, 
 server.js              entry point
 src/app.js             Express app (security headers, sessions, CSRF, routes)
 src/pages.js           loads Markdown pages, search index (MiniSearch), saving
+src/sections.js        the main topics (content/sections.json)
 src/markdown.js        Markdown → sanitized HTML + table of contents
 src/read-tracker.js    per-user read history
 src/users.js           user accounts (bcrypt)
 src/routes/            login, pages/editor, account, admin
 views/                 EJS templates
-public/                CSS and browser JS (search suggestions, list filter, editor)
+public/                CSS, logo and icons (public/img), browser JS (theme switch, search suggestions, list filter, editor)
 content/pages/         the guides (Markdown)
+content/sections.json  the five main topics
 scripts/               user management and new-page CLIs
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: How to change attributes on an object
 summary: Edit the attributes (name, description, custom fields) of a part, document or CAD document, then check the change in.
-category: Parts & BOMs
+category: Navigating and working with Windchill
 tags:
   - attributes
   - edit

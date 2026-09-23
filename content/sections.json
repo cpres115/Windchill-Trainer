@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "product-lifecycle-management",
+    "name": "Product Lifecycle Management",
+    "description": "Lifecycle states, promotion requests, change management and release processes.",
+    "icon": "lifecycle"
+  },
+  {
+    "slug": "navigating-windchill",
+    "name": "Navigating and working with Windchill",
+    "description": "Finding your way around: search, folders, workspaces, checking out, checking in and editing.",
+    "icon": "compass"
+  },
+  {
+    "slug": "document-objects",
+    "name": "Document Objects",
+    "description": "Creating, revising and managing documents and their attachments.",
+    "icon": "document"
+  },
+  {
+    "slug": "cad-objects",
+    "name": "CAD Objects",
+    "description": "Working with CAD documents, workspaces and authoring applications such as Creo.",
+    "icon": "cube"
+  },
+  {
+    "slug": "wt-parts",
+    "name": "WT Parts (Articles)",
+    "description": "Creating parts, managing part attributes and building product structures (BOMs).",
+    "icon": "part"
+  }
+]

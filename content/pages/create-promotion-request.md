@@ -1,7 +1,7 @@
 ---
 title: How to create a promotion request
 summary: Submit parts, CAD documents or documents for review and approval so they move to the next lifecycle state (for example In Work → Released).
-category: Change Management
+category: Product Lifecycle Management
 tags:
   - promotion request
   - promote

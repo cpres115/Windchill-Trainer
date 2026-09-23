@@ -7,6 +7,7 @@ import { requireRole } from '../auth.js';
 import { config } from '../config.js';
 import { SLUG_RE } from '../pages.js';
 import { readStatus } from '../read-tracker.js';
+import { loadSections, sectionFor, groupBySection } from '../sections.js';
 
 const router = Router();
 const canEdit = requireRole('editor');
@@ -45,8 +46,9 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => {
   const pages = req.app.locals.pages;
   const all = pages.all();
+  const sections = groupBySection(all).map((g) => ({ ...g, readCount: g.pages.filter((p) => res.locals.statusOf(p) !== 'unread').length }));
   const readCount = all.filter((p) => res.locals.statusOf(p) !== 'unread').length;
-  res.render('home', { title: 'Home', categories: pages.categories(), tags: pages.tags().slice(0, 12), total: all.length, readCount });
+  res.render('home', { title: 'Home', sections, tags: pages.tags().slice(0, 12), total: all.length, readCount });
 });
 
 router.get('/search', (req, res) => {
@@ -65,7 +67,17 @@ router.get('/tags/:tag', (req, res) => {
   res.render('list', { title: `Tag: ${req.params.tag}`, heading: `Pages tagged “${req.params.tag}”`, results });
 });
 
+router.get('/sections/:slug', (req, res, next) => {
+  const slug = req.params.slug;
+  const group = groupBySection(req.app.locals.pages.all()).find((g) => g.slug === slug);
+  if (!group) return next();
+  res.render('section', { title: group.name, section: group, results: group.pages });
+});
+
+// Older links and pages whose category isn't one of the main sections.
 router.get('/categories/:category', (req, res) => {
+  const section = sectionFor(req.params.category);
+  if (section) return res.redirect(301, `/sections/${section.slug}`);
   const cat = req.params.category.toLowerCase();
   const results = req.app.locals.pages.all().filter((p) => p.category.toLowerCase() === cat);
   res.render('list', { title: req.params.category, heading: req.params.category, results });
@@ -90,13 +102,17 @@ router.post('/pages/:slug/unread', (req, res, next) => {
 
 // --- Editing (editor role and above) ---------------------------------------
 
+// Section names offered in the editor, plus any other category already in use.
 function categoryNames(pages) {
-  return pages.categories().map((c) => c.name);
+  const names = loadSections().map((s) => s.name);
+  for (const c of pages.categories()) if (!sectionFor(c.name) && !names.includes(c.name)) names.push(c.name);
+  return names;
 }
 
 router.get('/new', canEdit, (req, res) => {
   const pages = req.app.locals.pages;
-  const draft = { slug: '', title: String(req.query.title || ''), summary: '', category: '', tags: [], body: '' };
+  const preset = sectionFor(req.query.section);
+  const draft = { slug: '', title: String(req.query.title || ''), summary: '', category: preset ? preset.name : '', tags: [], body: '' };
   res.render('edit', { title: 'New page', page: draft, isNew: true, error: null, categories: categoryNames(pages) });
 });
 

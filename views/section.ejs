@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<p class="crumbs"><a href="/">Home</a> ›</p>
+<div class="section-head">
+  <span class="section-icon"><%- include('partials/icon', { name: section.icon }) %></span>
+  <div>
+    <h1 class="page-heading"><%= section.name %> <span class="count"><%= results.length %></span></h1>
+    <% if (section.description) { %><p class="muted"><%= section.description %></p><% } %>
+  </div>
+  <% if (can('editor') && section.slug !== 'other') { %><a class="btn btn-secondary btn-small" href="/new?section=<%= section.slug %>">+ Add a guide here</a><% } %>
+</div>
+<% if (!results.length) { %><div class="card empty"><p class="muted">No guides in this topic yet.</p></div><% } %>
+<%- include('partials/result-list', { results }) %>
+<%- include('partials/footer') %>

@@ -10,9 +10,12 @@
     <label class="span-2">Title <input name="title" required maxlength="150" value="<%= page.title %>" placeholder="e.g. How to check in a CAD document" data-title></label>
     <label>URL name <span class="hint">/pages/…  (auto-generated if blank)</span>
       <input name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="80" value="<%= page.slug %>" placeholder="check-in-cad-document" data-slug></label>
-    <label>Category
-      <input name="category" list="category-list" maxlength="80" value="<%= page.category %>" placeholder="e.g. Document Management">
-      <datalist id="category-list"><% categories.forEach(function (c) { %><option value="<%= c %>"><% }) %></datalist></label>
+    <label>Topic
+      <select name="category" required>
+        <% if (!page.category) { %><option value="" selected disabled>Choose a topic…</option><% } %>
+        <% categories.forEach(function (c) { %><option value="<%= c %>"<%= c.toLowerCase() === String(page.category).toLowerCase() ? ' selected' : '' %>><%= c %></option><% }) %>
+        <% if (page.category && !categories.some(function (c) { return c.toLowerCase() === String(page.category).toLowerCase(); })) { %><option value="<%= page.category %>" selected><%= page.category %></option><% } %>
+      </select></label>
     <label class="span-2">Summary <span class="hint">Shown in search results</span>
       <input name="summary" maxlength="300" value="<%= page.summary %>" placeholder="One sentence describing what this guide teaches"></label>
     <label class="span-2">Keywords / tags <span class="hint">Comma-separated. Add synonyms users might search for.</span>

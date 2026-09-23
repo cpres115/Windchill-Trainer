@@ -1,6 +1,16 @@
 (function () {
   'use strict';
 
+  // ---- Light / dark mode switch ----------------------------------------------
+  document.querySelectorAll('[data-theme-toggle]').forEach(function (toggle) {
+    toggle.checked = document.documentElement.getAttribute('data-theme') === 'dark';
+    toggle.addEventListener('change', function () {
+      var theme = toggle.checked ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('theme', theme); } catch (e) {}
+    });
+  });
+
   // ---- Confirm dialogs for destructive forms --------------------------------
   document.querySelectorAll('form[data-confirm]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
@@ -78,7 +88,10 @@
           row.hidden = !ok;
           if (ok) visible++;
         });
-        group.hidden = !visible;
+        var filtering = words.length > 0 || show !== 'all';
+        group.hidden = filtering && !visible;
+        var empty = group.querySelector('[data-group-empty]');
+        if (empty) empty.hidden = filtering;
         visibleTotal += visible;
       });
       noMatch.hidden = visibleTotal > 0;

@@ -1,14 +1,17 @@
 <%- include('partials/header') %>
 <div class="login-wrap">
+  <div class="login-theme"><%- include('partials/theme-toggle') %></div>
   <form class="card login" action="/login" method="post">
-    <div class="login-brand"><img src="/favicon.svg" alt="" width="40" height="40"><h1><%= siteName %></h1></div>
-    <p class="muted">Sign in to access Windchill how-to guides.</p>
-    <% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <input type="hidden" name="next" value="<%= next %>">
-    <label>Username <input name="username" autocomplete="username" required autofocus value="<%= username %>"></label>
-    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
-    <button class="btn btn-block" type="submit">Sign in</button>
+    <div class="login-brand"><img src="/img/logo.png" alt="Fischer Connectors logo" width="52" height="61"><h1><%= siteName %></h1></div>
+    <div class="login-body">
+      <p class="muted">Sign in to access the Windchill how-to guides.</p>
+      <% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="next" value="<%= next %>">
+      <label>Username <input name="username" autocomplete="username" required autofocus value="<%= username %>"></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="btn btn-block" type="submit">Sign in</button>
+    </div>
   </form>
 </div>
 <%- include('partials/footer') %>

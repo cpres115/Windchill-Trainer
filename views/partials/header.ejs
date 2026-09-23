@@ -1,17 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> · <%= siteName %></title>
+  <script src="/js/theme.js"></script>
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/img/favicon-64.png" type="image/png">
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 </head>
 <body>
 <% if (user) { %>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26"><span><%= siteName %></span></a>
+    <a class="brand" href="/"><img src="/img/logo.png" alt="" width="31" height="36"><span><%= siteName %></span></a>
     <form class="topbar-search" action="/search" method="get" role="search">
       <input type="search" name="q" placeholder="Search guides…" aria-label="Search guides" autocomplete="off" data-suggest value="<%= typeof q !== 'undefined' ? q : '' %>">
       <div class="suggest" hidden></div>
@@ -24,6 +26,7 @@
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button class="link" type="submit">Sign out</button>
       </form>
+      <%- include('theme-toggle') %>
     </nav>
   </div>
 </header>

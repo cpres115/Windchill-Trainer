@@ -1,7 +1,7 @@
 ---
 title: How to create a WTPart
 summary: Create a new part (WTPart) in a product or library, fill in its attributes and check it in.
-category: Parts & BOMs
+category: WT Parts (Articles)
 tags:
   - WTPart
   - WT Part

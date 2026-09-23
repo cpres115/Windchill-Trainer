@@ -1,7 +1,8 @@
 <%- include('partials/header') %>
 <div class="page-layout<%= toc.length > 1 ? ' has-toc' : '' %>">
   <article class="card article">
-    <p class="crumbs"><a href="/">Home</a> › <a href="/categories/<%= encodeURIComponent(page.category) %>"><%= page.category %></a></p>
+    <% const sec = sectionLink(page.category); %>
+    <p class="crumbs"><a href="/">Home</a> › <a href="<%= sec.href %>"><%= sec.name %></a></p>
     <% if (status === 'updated') { %>
       <div class="alert alert-info" role="status">This guide has been updated since you last read it on <%= fmtDate(previous.lastViewed) %>.</div>
     <% } %>

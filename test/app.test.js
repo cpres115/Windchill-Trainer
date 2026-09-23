@@ -13,6 +13,7 @@ fs.mkdirSync(path.join(tmp, 'content', 'pages'), { recursive: true });
 for (const f of fs.readdirSync('content/pages')) {
   fs.copyFileSync(path.join('content/pages', f), path.join(tmp, 'content', 'pages', f));
 }
+fs.copyFileSync('content/sections.json', path.join(tmp, 'content', 'sections.json'));
 
 const { createApp } = await import('../src/app.js');
 const { createUser } = await import('../src/users.js');
@@ -36,6 +37,7 @@ function csrfFrom(html) {
   return html.match(/name="_csrf" value="([^"]+)"/)[1];
 }
 
+const login_ = (...a) => login(...a);
 async function login(username) {
   const agent = request.agent(app);
   const form = await agent.get('/login');
@@ -75,6 +77,44 @@ test('home page lists every guide with read status', async () => {
     assert.ok(res.text.includes(title), `missing ${title}`);
   }
   assert.match(res.text, /You've opened <strong>0<\/strong> of 3/);
+});
+
+test('home page links the five main topics, and each topic lists its guides', async () => {
+  const { agent } = await login('vera');
+  const home = await agent.get('/');
+  const topics = [
+    ['product-lifecycle-management', 'Product Lifecycle Management'],
+    ['navigating-windchill', 'Navigating and working with Windchill'],
+    ['document-objects', 'Document Objects'],
+    ['cad-objects', 'CAD Objects'],
+    ['wt-parts', 'WT Parts (Articles)'],
+  ];
+  for (const [slug, name] of topics) {
+    assert.match(home.text, new RegExp(`class="section-tile" href="/sections/${slug}"`));
+    assert.ok(home.text.includes(name), `missing topic ${name}`);
+  }
+  const parts = await agent.get('/sections/wt-parts');
+  assert.equal(parts.status, 200);
+  assert.match(parts.text, /href="\/pages\/create-wtpart"/);
+  assert.doesNotMatch(parts.text, /create-promotion-request/);
+  const empty = await agent.get('/sections/cad-objects');
+  assert.match(empty.text, /No guides in this topic yet/);
+  assert.equal((await agent.get('/sections/nope')).status, 404);
+  // Old category links redirect to the topic page.
+  const old = await agent.get('/categories/WT%20Parts%20(Articles)');
+  assert.equal(old.headers.location, '/sections/wt-parts');
+});
+
+test('every page has the site name, logo and a light/dark switch', async () => {
+  const login = await request(app).get('/login');
+  assert.match(login.text, /<title>Sign in · FCUS Windchill Training<\/title>/);
+  assert.match(login.text, /src="\/img\/logo.png"/);
+  assert.match(login.text, /data-theme-toggle/);
+  const { agent } = await login_('alice');
+  const page = await agent.get('/pages/create-wtpart');
+  assert.match(page.text, /data-theme-toggle/);
+  assert.match(page.text, /<script src="\/js\/theme.js"><\/script>/);
+  assert.equal((await request(app).get('/img/logo.png')).status, 200);
 });
 
 test('search finds pages by keyword, tag and fuzzy match', async () => {
@@ -117,13 +157,15 @@ test('editors can create, edit and delete pages; HTML is sanitized', async () =>
   const created = await agent.post('/new').type('form').send({
     _csrf: csrf,
     title: 'How to revise a part',
-    category: 'Parts & BOMs',
+    category: 'WT Parts (Articles)',
     tags: 'revise, new revision',
     summary: 'Create a new revision.',
     body: '## Steps\n\n1. Select the part\n2. Choose **Revise**\n\n<script>alert(1)</script><img src=x onerror=alert(1)>',
   });
   assert.equal(created.status, 302);
   assert.equal(created.headers.location, '/pages/how-to-revise-a-part');
+  assert.match((await agent.get('/sections/wt-parts')).text, /how-to-revise-a-part/);
+  assert.match((await agent.get('/new?section=cad-objects')).text, /<option value="CAD Objects" selected>/);
 
   const page = await agent.get('/pages/how-to-revise-a-part');
   assert.match(page.text, /<strong>Revise<\/strong>/);

@@ -12,6 +12,7 @@ import pageRoutes from './routes/pages.js';
 import accountRoutes from './routes/account.js';
 import adminRoutes from './routes/admin.js';
 import { highlight, fmtDate } from './view-helpers.js';
+import { sectionFor } from './sections.js';
 
 const MemoryStore = createMemoryStore(session);
 
@@ -26,6 +27,11 @@ export function createApp({ pages = new PageStore(), reads = new ReadTracker() }
   app.locals.fmtDate = fmtDate;
   app.locals.pages = pages;
   app.locals.reads = reads;
+  // Link target + display name for a page's category.
+  app.locals.sectionLink = (category) => {
+    const s = sectionFor(category);
+    return s ? { href: `/sections/${s.slug}`, name: s.name } : { href: `/categories/${encodeURIComponent(category)}`, name: category };
+  };
   // Defaults for views rendered before the session is loaded; res.locals override these.
   app.locals.user = null;
   app.locals.csrfToken = '';

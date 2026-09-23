@@ -28,7 +28,7 @@ export const config = {
   imagesDir: path.join(contentDir, 'images'),
   usersFile: path.join(dataDir, 'users.json'),
   port: Number(process.env.PORT) || 3000,
-  siteName: process.env.SITE_NAME || 'Windchill Trainer',
+  siteName: process.env.SITE_NAME || 'FCUS Windchill Training',
   // Set to "true" when served over HTTPS (directly or behind a proxy).
   secureCookies: process.env.SECURE_COOKIES === 'true',
   trustProxy: process.env.TRUST_PROXY === 'true',

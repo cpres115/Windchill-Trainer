@@ -1,16 +1,24 @@
 <%- include('partials/header') %>
 <section class="hero">
   <h1>How do I… in Windchill?</h1>
-  <p class="muted">Search <%= total %> step-by-step guide<%= total === 1 ? '' : 's' %> by keyword, e.g. <em>promotion request</em>, <em>WTPart</em>, <em>attributes</em>.</p>
+  <p class="muted">Search <%= total %> step-by-step guide<%= total === 1 ? '' : 's' %> by keyword, or pick a topic below.</p>
   <form class="hero-search" action="/search" method="get" role="search">
     <input type="search" name="q" placeholder="Search for a task or keyword…" aria-label="Search guides" autocomplete="off" autofocus data-suggest>
     <div class="suggest" hidden></div>
     <button class="btn" type="submit">Search</button>
   </form>
-  <% if (tags.length) { %>
-  <div class="tags center"><% tags.forEach(function (t) { %><a class="tag" href="/tags/<%= encodeURIComponent(t.name) %>"><%= t.name %></a><% }) %></div>
-  <% } %>
 </section>
+
+<nav class="section-tiles" aria-label="Topics">
+  <% sections.forEach(function (s) { %>
+  <a class="section-tile" href="/sections/<%= s.slug %>">
+    <span class="section-icon"><%- include('partials/icon', { name: s.icon }) %></span>
+    <span class="section-name"><%= s.name %></span>
+    <span class="section-desc"><%= s.description %></span>
+    <span class="section-count"><%= s.pages.length %> guide<%= s.pages.length === 1 ? '' : 's' %><% if (s.pages.length) { %> · <%= s.readCount %> read<% } %></span>
+  </a>
+  <% }) %>
+</nav>
 
 <% if (total === 0) { %>
   <div class="card empty">
@@ -36,12 +44,15 @@
     </div>
   </div>
 
-  <% categories.forEach(function (c) { %>
-  <div class="page-group" data-group>
-    <h3><a href="/categories/<%= encodeURIComponent(c.name) %>"><%= c.name %></a> <span class="count"><%= c.pages.length %></span></h3>
+  <% sections.forEach(function (s) { %>
+  <div class="page-group" id="topic-<%= s.slug %>" data-group>
+    <h3><a href="/sections/<%= s.slug %>"><%= s.name %></a> <span class="count"><%= s.pages.length %></span></h3>
+    <% if (!s.pages.length) { %>
+      <p class="muted group-empty" data-group-empty>No guides in this topic yet.<% if (can('editor')) { %> <a href="/new?section=<%= s.slug %>">Add one →</a><% } %></p>
+    <% } %>
     <ul class="page-rows">
-      <% c.pages.forEach(function (p) { const st = statusOf(p); %>
-      <li class="page-row" data-status="<%= st %>" data-text="<%= [p.title, p.summary, p.tags.join(' '), c.name].join(' ').toLowerCase() %>">
+      <% s.pages.forEach(function (p) { const st = statusOf(p); %>
+      <li class="page-row" data-status="<%= st %>" data-text="<%= [p.title, p.summary, p.tags.join(' '), s.name].join(' ').toLowerCase() %>">
         <a href="/pages/<%= p.slug %>">
           <span class="page-row-title"><%= p.title %></span>
           <% if (p.summary) { %><span class="page-row-summary"><%= p.summary %></span><% } %>
@@ -54,5 +65,11 @@
   <% }) %>
   <p class="muted empty" data-no-match hidden>No guides match that filter. <a href="#" data-search-link>Search all content instead →</a></p>
 </section>
+<% if (tags.length) { %>
+<section class="popular-tags">
+  <h2>Popular keywords</h2>
+  <div class="tags"><% tags.forEach(function (t) { %><a class="tag" href="/tags/<%= encodeURIComponent(t.name) %>"><%= t.name %></a><% }) %></div>
+</section>
+<% } %>
 <% } %>
 <%- include('partials/footer') %>
