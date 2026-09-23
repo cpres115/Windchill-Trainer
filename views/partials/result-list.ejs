@@ -1,0 +1,13 @@
+<ul class="results">
+  <% results.forEach(function (r) { %>
+  <li class="result">
+    <div class="result-head">
+      <a class="result-title" href="/pages/<%= r.slug %>"><%- highlight(r.title, r.terms || []) %></a>
+      <%- include('status-badge', { status: statusOf(r) }) %>
+    </div>
+    <div class="meta"><a href="/categories/<%= encodeURIComponent(r.category) %>"><%= r.category %></a><% if (r.updated) { %> · Updated <%= fmtDate(r.updated) %><% } %></div>
+    <p><%- highlight(r.snippet || r.summary, r.terms || []) %></p>
+    <% if (r.tags.length) { %><div class="tags"><% r.tags.forEach(function (t) { %><a class="tag" href="/tags/<%= encodeURIComponent(t) %>"><%= t %></a><% }) %></div><% } %>
+  </li>
+  <% }) %>
+</ul>

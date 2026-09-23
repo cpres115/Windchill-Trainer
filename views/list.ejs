@@ -1,0 +1,6 @@
+<%- include('partials/header') %>
+<p class="crumbs"><a href="/">Home</a> ›</p>
+<h1 class="page-heading"><%= heading %> <span class="count"><%= results.length %></span></h1>
+<% if (!results.length) { %><p class="muted">No pages here yet.</p><% } %>
+<%- include('partials/result-list', { results }) %>
+<%- include('partials/footer') %>

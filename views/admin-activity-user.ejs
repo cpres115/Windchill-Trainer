@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<%- include('partials/admin-tabs', { active: 'activity' }) %>
+<p class="crumbs"><a href="/admin/activity">Reading activity</a> ›</p>
+<h1 class="page-heading"><%= person.username %> <span class="role role-<%= person.role %>"><%= person.role %></span></h1>
+<div class="card">
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Page</th><th>Status</th><th>First opened</th><th>Last opened</th><th>Visits</th></tr></thead>
+    <tbody>
+    <% rows.forEach(function (r) { %>
+      <tr>
+        <td><a href="/admin/activity/pages/<%= r.page.slug %>"><%= r.page.title %></a> <span class="muted">· <%= r.page.category %></span></td>
+        <td><%- include('partials/admin-status', { status: r.status }) %></td>
+        <td class="muted"><%= r.entry ? fmtDate(r.entry.firstViewed) : '—' %></td>
+        <td class="muted"><%= r.entry ? fmtDate(r.entry.lastViewed) : '—' %></td>
+        <td><%= r.entry ? r.entry.count : 0 %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('partials/footer') %>

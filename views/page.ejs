@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<div class="page-layout<%= toc.length > 1 ? ' has-toc' : '' %>">
+  <article class="card article">
+    <p class="crumbs"><a href="/">Home</a> › <a href="/categories/<%= encodeURIComponent(page.category) %>"><%= page.category %></a></p>
+    <% if (status === 'updated') { %>
+      <div class="alert alert-info" role="status">This guide has been updated since you last read it on <%= fmtDate(previous.lastViewed) %>.</div>
+    <% } %>
+    <div class="article-head">
+      <h1><%= page.title %></h1>
+      <% if (can('editor')) { %><a class="btn btn-secondary btn-small" href="/pages/<%= page.slug %>/edit">Edit</a><% } %>
+    </div>
+    <% if (page.summary) { %><p class="lead"><%= page.summary %></p><% } %>
+    <div class="meta">
+      <% if (page.updated) { %><span>Updated <%= fmtDate(page.updated) %><% if (page.updatedBy) { %> by <%= page.updatedBy %><% } %></span><% } %>
+      <% if (page.tags.length) { %><span class="tags"><% page.tags.forEach(function (t) { %><a class="tag" href="/tags/<%= encodeURIComponent(t) %>"><%= t %></a><% }) %></span><% } %>
+    </div>
+    <div class="prose"><%- html %></div>
+    <div class="read-footer">
+      <span class="muted">
+        <% if (previous) { %>You first opened this guide on <%= fmtDate(previous.firstViewed) %> (<%= previous.count + 1 %> visits).<% } else { %>✓ Marked as read — this is your first visit.<% } %>
+      </span>
+      <form action="/pages/<%= page.slug %>/unread" method="post" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="link" type="submit">Mark as unread</button>
+      </form>
+    </div>
+  </article>
+  <% if (toc.length > 1) { %>
+  <nav class="toc" aria-label="On this page">
+    <h2>On this page</h2>
+    <ul><% toc.forEach(function (h) { %><li class="toc-<%= h.depth %>"><a href="#<%= h.id %>"><%= h.text %></a></li><% }) %></ul>
+  </nav>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+<%- include('partials/admin-tabs', { active: 'users' }) %>
+<h1 class="page-heading">Manage users</h1>
+<% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+<% if (success) { %><div class="alert alert-success" role="status"><%= success %></div><% } %>
+
+<div class="card">
+  <h2>Add a user</h2>
+  <form action="/admin/users" method="post" class="row-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Username <input name="username" required pattern="[a-zA-Z0-9._\-]{3,64}" autocomplete="off"></label>
+    <label>Temporary password <input name="password" type="password" minlength="<%= minPassword %>" required autocomplete="new-password"></label>
+    <label>Role <select name="role"><% roles.forEach(function (r) { %><option value="<%= r %>"><%= r %></option><% }) %></select></label>
+    <button class="btn" type="submit">Add user</button>
+  </form>
+  <p class="hint"><strong>viewer</strong> can read and search · <strong>editor</strong> can also create, edit and delete pages · <strong>admin</strong> can also manage users.</p>
+</div>
+
+<div class="card">
+  <h2>Users (<%= users.length %>)</h2>
+  <div class="table-wrap">
+  <table class="users">
+    <thead><tr><th>Username</th><th>Role</th><th>Reset password</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+    <% users.forEach(function (u) { const enc = encodeURIComponent(u.username); %>
+      <tr>
+        <td><strong><%= u.username %></strong><% if (u.username === user.username) { %> <span class="muted">(you)</span><% } %></td>
+        <td>
+          <form action="/admin/users/<%= enc %>/role" method="post" class="inline-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <select name="role" aria-label="Role for <%= u.username %>"><% roles.forEach(function (r) { %><option value="<%= r %>"<%= r === u.role ? ' selected' : '' %>><%= r %></option><% }) %></select>
+            <button class="btn btn-secondary btn-small" type="submit">Save</button>
+          </form>
+        </td>
+        <td>
+          <form action="/admin/users/<%= enc %>/password" method="post" class="inline-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="password" name="password" minlength="<%= minPassword %>" placeholder="New password" required autocomplete="new-password" aria-label="New password for <%= u.username %>">
+            <button class="btn btn-secondary btn-small" type="submit">Reset</button>
+          </form>
+        </td>
+        <td class="muted"><%= (u.createdAt || '').slice(0, 10) %></td>
+        <td>
+          <% if (u.username !== user.username) { %>
+          <form action="/admin/users/<%= enc %>/delete" method="post" data-confirm="Delete user <%= u.username %>?">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="btn btn-danger btn-small" type="submit">Delete</button>
+          </form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('partials/footer') %>

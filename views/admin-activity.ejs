@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<%- include('partials/admin-tabs', { active: 'activity' }) %>
+<div class="heading-row">
+  <h1 class="page-heading">Reading activity</h1>
+  <a class="btn btn-secondary btn-small" href="/admin/activity.csv">Download CSV</a>
+</div>
+<p class="muted"><strong>Read</strong> = opened the current version. <strong>Needs re-read</strong> = opened before the page was last edited.</p>
+
+<div class="card">
+  <h2>By user</h2>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>User</th><th>Role</th><th>Progress</th><th>Read</th><th>Needs re-read</th><th>Not opened</th><th>Last active</th></tr></thead>
+    <tbody>
+    <% users.forEach(function (u) { %>
+      <tr>
+        <td><a href="/admin/activity/users/<%= encodeURIComponent(u.username) %>"><strong><%= u.username %></strong></a></td>
+        <td><span class="role role-<%= u.role %>"><%= u.role %></span></td>
+        <td><progress max="<%= totalPages || 1 %>" value="<%= u.read %>" title="<%= u.read %> of <%= totalPages %>"></progress></td>
+        <td><%= u.read %></td>
+        <td><%= u.updated %></td>
+        <td><%= totalPages - u.read - u.updated %></td>
+        <td class="muted"><%= u.lastActive ? fmtDate(u.lastActive) : 'Never' %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>By page</h2>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Page</th><th>Category</th><th>Read (current version)</th><th>Ever opened</th><th>Last viewed</th></tr></thead>
+    <tbody>
+    <% pageStats.forEach(function (p) { %>
+      <tr>
+        <td><a href="/admin/activity/pages/<%= p.slug %>"><strong><%= p.title %></strong></a></td>
+        <td class="muted"><%= p.category %></td>
+        <td><progress max="<%= users.length || 1 %>" value="<%= p.current %>"></progress> <%= p.current %> / <%= users.length %></td>
+        <td><%= p.readers %></td>
+        <td class="muted"><%= p.lastViewed ? fmtDate(p.lastViewed) : 'Never' %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<%- include('partials/footer') %>

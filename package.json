@@ -1,0 +1,36 @@
+{
+  "name": "windchill-trainer",
+  "version": "1.0.0",
+  "description": "Searchable, login-protected knowledge base of how-to guides for PTC Windchill.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch-path=src --watch-path=views --watch-path=server.js server.js",
+    "user": "node scripts/manage-users.js",
+    "new-page": "node scripts/new-page.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "express-session": "^1.19.0",
+    "gray-matter": "^4.0.3",
+    "helmet": "^8.3.0",
+    "marked": "^18.0.14",
+    "memorystore": "^1.6.8",
+    "minisearch": "^7.2.0",
+    "multer": "^2.4.0",
+    "sanitize-html": "^2.17.7"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.0"
+  }
+}

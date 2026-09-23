@@ -1,0 +1,60 @@
+<%- include('partials/header') %>
+<% const action = isNew ? '/new' : '/pages/' + (page.originalSlug || page.slug) + '/edit'; %>
+<p class="crumbs"><a href="/">Home</a> › <% if (!isNew) { %><a href="/pages/<%= page.originalSlug || page.slug %>"><%= page.title %></a> › <% } %><%= isNew ? 'New page' : 'Edit' %></p>
+<h1 class="page-heading"><%= isNew ? 'New page' : 'Edit page' %></h1>
+<% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+
+<form class="editor-form" action="<%= action %>" method="post" data-editor data-csrf="<%= csrfToken %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="card fields">
+    <label class="span-2">Title <input name="title" required maxlength="150" value="<%= page.title %>" placeholder="e.g. How to check in a CAD document" data-title></label>
+    <label>URL name <span class="hint">/pages/…  (auto-generated if blank)</span>
+      <input name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="80" value="<%= page.slug %>" placeholder="check-in-cad-document" data-slug></label>
+    <label>Category
+      <input name="category" list="category-list" maxlength="80" value="<%= page.category %>" placeholder="e.g. Document Management">
+      <datalist id="category-list"><% categories.forEach(function (c) { %><option value="<%= c %>"><% }) %></datalist></label>
+    <label class="span-2">Summary <span class="hint">Shown in search results</span>
+      <input name="summary" maxlength="300" value="<%= page.summary %>" placeholder="One sentence describing what this guide teaches"></label>
+    <label class="span-2">Keywords / tags <span class="hint">Comma-separated. Add synonyms users might search for.</span>
+      <input name="tags" value="<%= page.tags.join(', ') %>" placeholder="check in, checkin, CAD, Creo"></label>
+  </div>
+
+  <div class="card editor">
+    <div class="editor-toolbar" role="toolbar" aria-label="Formatting">
+      <button type="button" data-md="heading" title="Heading">H2</button>
+      <button type="button" data-md="bold" title="Bold"><b>B</b></button>
+      <button type="button" data-md="italic" title="Italic"><i>I</i></button>
+      <button type="button" data-md="ol" title="Numbered steps">1.</button>
+      <button type="button" data-md="ul" title="Bullet list">•</button>
+      <button type="button" data-md="link" title="Link">Link</button>
+      <button type="button" data-md="code" title="Code">&lt;/&gt;</button>
+      <button type="button" data-md="tip" title="Tip callout">Tip</button>
+      <button type="button" data-md="table" title="Table">Table</button>
+      <label class="upload-btn" title="Upload screenshot">Image<input type="file" accept="image/png,image/jpeg,image/gif,image/webp" data-upload hidden></label>
+      <span class="toolbar-spacer"></span>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" data-view="split" aria-selected="true">Split</button>
+        <button type="button" role="tab" data-view="write">Write</button>
+        <button type="button" role="tab" data-view="preview">Preview</button>
+      </div>
+    </div>
+    <div class="editor-panes" data-pane-view="split">
+      <textarea name="body" spellcheck="true" data-body placeholder="Write the guide in Markdown. Tip: paste or drop a screenshot here to upload it."><%= page.body %></textarea>
+      <div class="prose preview" data-preview aria-live="polite"></div>
+    </div>
+    <p class="hint editor-help">Markdown: <code>## Heading</code>, <code>**bold**</code>, <code>1. step</code>, <code>[link](/pages/slug)</code>. Paste or drag images straight into the text box.</p>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit">Save page</button>
+    <a class="btn btn-secondary" href="<%= isNew ? '/' : '/pages/' + (page.originalSlug || page.slug) %>">Cancel</a>
+  </div>
+</form>
+
+<% if (!isNew) { %>
+<form class="danger-zone" action="/pages/<%= page.originalSlug || page.slug %>/delete" method="post" data-confirm="Delete this page permanently?">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <button class="btn btn-danger btn-small" type="submit">Delete page</button>
+</form>
+<% } %>
+<%- include('partials/footer') %>
