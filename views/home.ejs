@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <h1>How do I… in Windchill?</h1>
+  <p class="muted">Search <%= total %> step-by-step guide<%= total === 1 ? '' : 's' %> by keyword, e.g. <em>promotion request</em>, <em>WTPart</em>, <em>attributes</em>.</p>
+  <form class="hero-search" action="/search" method="get" role="search">
+    <input type="search" name="q" placeholder="Search for a task or keyword…" aria-label="Search guides" autocomplete="off" autofocus data-suggest>
+    <div class="suggest" hidden></div>
+    <button class="btn" type="submit">Search</button>
+  </form>
+  <% if (tags.length) { %>
+  <div class="tags center"><% tags.forEach(function (t) { %><a class="tag" href="/tags/<%= encodeURIComponent(t.name) %>"><%= t.name %></a><% }) %></div>
+  <% } %>
+</section>
+
+<% if (total === 0) { %>
+  <div class="card empty">
+    <h2>No guides yet</h2>
+    <% if (can('editor')) { %><p><a class="btn" href="/new">Create the first page</a></p><% } else { %><p class="muted">Check back soon.</p><% } %>
+  </div>
+<% } else { %>
+<section class="card all-pages" data-page-list>
+  <div class="list-head">
+    <div>
+      <h2>All guides</h2>
+      <div class="progress" title="<%= readCount %> of <%= total %> read">
+        <progress max="<%= total %>" value="<%= readCount %>"></progress>
+        <span class="muted">You've opened <strong><%= readCount %></strong> of <%= total %></span>
+      </div>
+    </div>
+    <div class="list-controls">
+      <input type="search" placeholder="Filter this list…" aria-label="Filter guides" data-filter>
+      <div class="tabs" role="tablist" aria-label="Show">
+        <button type="button" role="tab" aria-selected="true" data-show="all">All</button>
+        <button type="button" role="tab" aria-selected="false" data-show="unread">Not read</button>
+      </div>
+    </div>
+  </div>
+
+  <% categories.forEach(function (c) { %>
+  <div class="page-group" data-group>
+    <h3><a href="/categories/<%= encodeURIComponent(c.name) %>"><%= c.name %></a> <span class="count"><%= c.pages.length %></span></h3>
+    <ul class="page-rows">
+      <% c.pages.forEach(function (p) { const st = statusOf(p); %>
+      <li class="page-row" data-status="<%= st %>" data-text="<%= [p.title, p.summary, p.tags.join(' '), c.name].join(' ').toLowerCase() %>">
+        <a href="/pages/<%= p.slug %>">
+          <span class="page-row-title"><%= p.title %></span>
+          <% if (p.summary) { %><span class="page-row-summary"><%= p.summary %></span><% } %>
+        </a>
+        <%- include('partials/status-badge', { status: st }) %>
+      </li>
+      <% }) %>
+    </ul>
+  </div>
+  <% }) %>
+  <p class="muted empty" data-no-match hidden>No guides match that filter. <a href="#" data-search-link>Search all content instead →</a></p>
+</section>
+<% } %>
+<%- include('partials/footer') %>

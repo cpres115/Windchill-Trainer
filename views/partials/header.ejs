@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · <%= siteName %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<% if (user) { %>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26"><span><%= siteName %></span></a>
+    <form class="topbar-search" action="/search" method="get" role="search">
+      <input type="search" name="q" placeholder="Search guides…" aria-label="Search guides" autocomplete="off" data-suggest value="<%= typeof q !== 'undefined' ? q : '' %>">
+      <div class="suggest" hidden></div>
+    </form>
+    <nav class="topbar-nav">
+      <% if (can('editor')) { %><a class="btn btn-small" href="/new">+ New page</a><% } %>
+      <% if (can('admin')) { %><a href="/admin/activity">Activity</a><a href="/admin/users">Users</a><% } %>
+      <a href="/account"><%= user.username %></a>
+      <form action="/logout" method="post" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="link" type="submit">Sign out</button>
+      </form>
+    </nav>
+  </div>
+</header>
+<% } %>
+<main class="container">

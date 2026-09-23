@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<h1 class="page-heading">My account</h1>
+<div class="card narrow">
+  <p>Signed in as <strong><%= user.username %></strong> <span class="role role-<%= user.role %>"><%= user.role %></span></p>
+  <h2>Change password</h2>
+  <% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+  <% if (success) { %><div class="alert alert-success" role="status"><%= success %></div><% } %>
+  <form action="/account/password" method="post" class="stack">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Current password <input type="password" name="current" autocomplete="current-password" required></label>
+    <label>New password <input type="password" name="password" autocomplete="new-password" minlength="10" required></label>
+    <label>Confirm new password <input type="password" name="confirm" autocomplete="new-password" minlength="10" required></label>
+    <button class="btn" type="submit">Update password</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

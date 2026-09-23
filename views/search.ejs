@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+<h1 class="page-heading"><% if (q) { %><%= results.length %> result<%= results.length === 1 ? '' : 's' %> for “<%= q %>”<% } else { %>Search<% } %></h1>
+<% if (q && !results.length) { %>
+  <div class="card empty">
+    <p>No guides matched your search. Try fewer or different keywords.</p>
+    <% if (can('editor')) { %><p><a class="btn btn-secondary" href="/new?title=<%= encodeURIComponent(q) %>">Create a page called “<%= q %>”</a></p><% } %>
+  </div>
+<% } else { %>
+  <%- include('partials/result-list', { results }) %>
+<% } %>
+<%- include('partials/footer') %>
